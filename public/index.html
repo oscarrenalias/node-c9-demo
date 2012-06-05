@@ -2,16 +2,25 @@
  <head>
   <title>Index</title>
   <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBGVLJbZMMkRIyynP4HhG36iGA8z_sloj8&sensor=false"></script>
   <script>
+  
+   function init() {
+    var myOptions = {
+        center: new google.maps.LatLng(-74,40),
+        zoom: 2,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("map"), myOptions);
+   }  
+  
    var socket = io.connect('http://' + location.hostname);
    socket.on('tweet', function(data) {
     console.log("tweet: " + data);    
    });        
  </script>
  </head>
- <body>
-  <p>
-   Hello, world!
-  </p>
- </body>
+ <body onload="init()">
+    <div id="map" style="width:100%; height:100%"></div>
+</body>
 </html>

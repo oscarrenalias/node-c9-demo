@@ -43,11 +43,6 @@ app.get("/", function(req, res) {
 // tell Express where to find static files
 app.use(express.static(__dirname + "/public"));
 
-setInterval(function() { 
-    console.log("TICK"); 
-    io.sockets.in(streamRoom).emit('tweet', {tweet: "tweet"});
-}, 5000);
-
 // event for socket.io
 io.sockets.on('connection', function (socket) {
     console.log("New client added");
