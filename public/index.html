@@ -4,10 +4,9 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
    var socket = io.connect('http://' + location.hostname);
-   socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-  });
+   socket.on('tweet', function(data) {
+    console.log("tweet: " + data);    
+   });        
  </script>
  </head>
  <body>

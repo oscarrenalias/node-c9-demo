@@ -3,6 +3,7 @@ var express = require('express'),
     app = express.createServer(),
     io = require('socket.io').listen(app),
     port = process.env.PORT,
+    streamRoom = 'twitter',
     filterLocationURI = "/1/statuses/sample.json",
     defaultLocation = "?locations=-74,40,-73,41";  // New York
     
@@ -26,7 +27,8 @@ var options = {
 
 var request = http.request(options, function(response) {
     response.on("data", function(chunk) {
-        console.log("chunk=" + chunk);    
+        console.log("chunk=" + chunk); 
+        io.sockets.in(streamRoom).emit('tweet', {tweet: chunk});
     });
 });
 request.on("error", function(error) {
@@ -41,12 +43,15 @@ app.get("/", function(req, res) {
 // tell Express where to find static files
 app.use(express.static(__dirname + "/public"));
 
+setInterval(function() { 
+    console.log("TICK"); 
+    io.sockets.in(streamRoom).emit('tweet', {tweet: "tweet"});
+}, 5000);
+
 // event for socket.io
 io.sockets.on('connection', function (socket) {
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function (data) {
-        console.log(data);
-    });
+    console.log("New client added");
+    socket.join(streamRoom);
 });
 
 // start the application
