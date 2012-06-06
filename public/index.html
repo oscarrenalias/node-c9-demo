@@ -5,18 +5,26 @@
   <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBGVLJbZMMkRIyynP4HhG36iGA8z_sloj8&sensor=false"></script>
   <script>
   
-   function init() {
+  function init() {
     var myOptions = {
-        center: new google.maps.LatLng(-74,40),
-        zoom: 2,
+        center: new google.maps.LatLng(40.8,-73.9),
+        zoom: 10,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
-    var map = new google.maps.Map(document.getElementById("map"), myOptions);
-   }  
+  
+    // this one HAS to be global   
+    map = new google.maps.Map(document.getElementById("map"), myOptions);
+  }  
   
    var socket = io.connect('http://' + location.hostname);
-   socket.on('tweet', function(data) {
-    console.log("tweet: " + data);    
+   socket.on('tweet', function(tweet) {
+    //console.log("tweet: " + data);    
+    var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(tweet.lat, tweet.lng),
+      map: map,
+      animation: google.maps.Animation.DROP,
+      title: tweet.text
+    });
    });        
  </script>
  </head>
