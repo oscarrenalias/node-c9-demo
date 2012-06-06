@@ -1,39 +1,37 @@
 var express = require('express'),
-    http = require('https'),
+    https = require('https'),
     app = express.createServer(),
     io = require('socket.io').listen(app),
-    port = process.env.PORT,
+    port = process.env.PORT || 8081,
     streamRoom = 'twitter',
-    filterLocationURI = "/1/statuses/sample.json",
-    defaultLocation = "?locations=-74,40,-73,41";  // New York
+    filterLocationURI = "/1/statuses/filter.json",
+    defaultLocation = "?locations=-74,40,-72,42";  // New York
     
 // user and password of our test user - kids don't try this at home
 var USERNAME = "acnstreamtest";
-var PASSWORD = "..fill me in...";
+var PASSWORD = "testtest8899";
 
-// connect to the Twitter streaming API
-var headers = [];
-var auth = new Buffer(USERNAME + ':' + PASSWORD).toString('base64');
-headers['Authorization'] = "Basic " + auth;
-headers['Host'] = "stream.twitter.com";
 var options = {
     host: "stream.twitter.com",
     port: 443,
     path: filterLocationURI + defaultLocation,
     method: "GET",
-    auth: USERNAME + ":" + PASSWORD /*,
-    headers: headers*/
+    auth: USERNAME + ":" + PASSWORD
 };
-
-var request = http.request(options, function(response) {
+var request = https.request(options, function(response) {
     response.on("data", function(chunk) {
-        console.log("chunk=" + chunk); 
-        io.sockets.in(streamRoom).emit('tweet', {tweet: chunk});
+        console.log("chunk=\"" + chunk + "\""); 
+        if(chunk.toString().trim() != "") {
+            var tweet = JSON.parse(chunk);
+            if(tweet.geo) {
+                console.log(tweet.geo.coordinates);    
+                io.sockets.in(streamRoom).emit('tweet', 
+                    {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text});
+            }
+        }
     });
 });
-request.on("error", function(error) {
-    console.log("Something went wrong: " + error);    
-});
+request.end();
 
 // set up the route for the root URL
 app.get("/", function(req, res) {
