@@ -1,26 +1,28 @@
+// ** 1. Initialize variables and modules **
+require('./credentials.js');
 var express = require('express'),
     https = require('https'),
     app = express.createServer(),
     io = require('socket.io').listen(app),
     port = process.env.PORT || 8081,
     streamRoom = 'twitter',
-    filterLocationURI = "/1/statuses/filter.json",
-    defaultLocation = "?locations=-74,40,-72,42";  // New York
+    uri = "/1/statuses/filter.json?locations=-74,40,-72,42"; // New York
     
-// user and password of our test user - kids don't try this at home
-var USERNAME = "acnstreamtest";
-var PASSWORD = "testtest8899";
+// Tell the Express framework where to find our static files and redirect / to index.html
+app.use(express.static(__dirname + "/public"));
+app.get("/", function(req, res) {
+    res.redirect("/index.html");    
+});
 
+
+// ** 2. set up the streaming connection to google **
 var options = {
     host: "stream.twitter.com",
-    port: 443,
-    path: filterLocationURI + defaultLocation,
-    method: "GET",
-    auth: USERNAME + ":" + PASSWORD
+    path: uri,
+    auth: credentials.user + ":" + credentials.password
 };
 var request = https.request(options, function(response) {
     response.on("data", function(chunk) {
-        console.log("chunk=\"" + chunk + "\""); 
         if(chunk.toString().trim() != "") {
             var tweet = JSON.parse(chunk);
             if(tweet.geo) {
@@ -33,20 +35,12 @@ var request = https.request(options, function(response) {
 });
 request.end();
 
-// set up the route for the root URL
-app.get("/", function(req, res) {
-    res.redirect("/index.html");    
-});
-
-// tell Express where to find static files
-app.use(express.static(__dirname + "/public"));
-
-// event for socket.io
+// 3. ** handle WebSocket connections **
 io.sockets.on('connection', function (socket) {
     console.log("New client added");
     socket.join(streamRoom);
 });
 
-// start the application
+// ** 4. start the application **
 app.listen(port);
 console.log("Server started in port: " + port);
