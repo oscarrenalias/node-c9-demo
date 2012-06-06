@@ -5,8 +5,7 @@ var express = require('express'),
     app = express.createServer(),
     io = require('socket.io').listen(app),
     port = process.env.PORT || 8081,
-    streamRoom = 'twitter',
-    uri = "/1/statuses/filter.json?locations=-74,40,-72,42"; // New York
+    streamRoom = 'twitter';
     
 // Tell the Express framework where to find our static files and redirect / to index.html
 app.use(express.static(__dirname + "/public"));
@@ -18,7 +17,7 @@ app.get("/", function(req, res) {
 // ** 2. set up the streaming connection to google **
 var options = {
     host: "stream.twitter.com",
-    path: uri,
+    path: "/1/statuses/filter.json?locations=-74,40,-72,42", // New York
     auth: credentials.user + ":" + credentials.password
 };
 var request = https.request(options, function(response) {
