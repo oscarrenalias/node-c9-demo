@@ -4,8 +4,7 @@ var express = require('express'),
     https = require('https'),
     app = express.createServer(),
     io = require('socket.io').listen(app),
-    port = process.env.PORT || 8081,
-    streamRoom = 'twitter';
+    port = process.env.PORT || 8081;
     
 // Tell the Express framework where to find our static files and redirect / to index.html
 app.use(express.static(__dirname + "/public"));
@@ -26,7 +25,7 @@ var request = https.request(options, function(response) {
             var tweet = JSON.parse(chunk);
             if(tweet.geo) {
                 console.log(tweet.geo.coordinates);    
-                io.sockets.in(streamRoom).emit('tweet', 
+                io.sockets.in('twitter').emit('tweet', 
                     {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text});
             }
         }
@@ -37,7 +36,7 @@ request.end();
 // 3. ** handle WebSocket connections **
 io.sockets.on('connection', function (socket) {
     console.log("New client added");
-    socket.join(streamRoom);
+    socket.join('twitter');
 });
 
 // ** 4. start the application **
