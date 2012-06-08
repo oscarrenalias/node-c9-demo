@@ -13,7 +13,7 @@ app.get("/", function(req, res) {
 });
 
 
-// ** 2. set up the streaming connection to google **
+// ** 2. set up the streaming connection to the Twitter filtered firehose **
 var options = {
     host: "stream.twitter.com",
     path: "/1/statuses/filter.json?locations=-74,40,-72,42", // New York
