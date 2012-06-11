@@ -15,15 +15,6 @@
     map = new google.maps.Map(document.getElementById("map"), myOptions);
   }  
   
-   var socket = io.connect('http://' + location.hostname);
-   socket.on('tweet', function(tweet) {
-    var marker = new google.maps.Marker({
-      position: new google.maps.LatLng(tweet.lat, tweet.lng),
-      map: map,
-      animation: google.maps.Animation.DROP,
-      title: tweet.text
-    });
-   });        
  </script>
  </head>
  <body onload="init()">
