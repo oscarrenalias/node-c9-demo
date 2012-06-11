@@ -3,6 +3,7 @@ require('./credentials.js');
 var express = require('express'),
     https = require('https'),
     app = express.createServer(),
+    io = require('socket.io').listen(app),
     port = process.env.PORT || 8081;
     
 // Tell the Express framework where to find our static files and redirect / to index.html
@@ -27,6 +28,11 @@ var request = https.request(options, function(response) {
     });
 });
 request.end();
+
+io.sockets.on('connection', function (socket) {
+    console.log("New client added");
+    socket.join('twitter');
+});
 
 // start the application **
 app.listen(port);
