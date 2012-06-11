@@ -23,6 +23,8 @@ var request = https.request(options, function(response) {
             var tweet = JSON.parse(chunk);
             if(tweet.geo) {
                 console.log("Tweet: lat = " + tweet.geo.coordinates[1] + ", long = " + tweet.geo.coordinates[1]);
+                io.sockets.in('twitter').emit('tweet', 
+                    {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text});
             }
         }
     });
