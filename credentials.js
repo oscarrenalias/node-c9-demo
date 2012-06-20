@@ -1,4 +1,4 @@
 credentials = {
-    user: "acnstreamtest",
-	password: "testtest8899"	
+    user: "YOUR-USER",
+	password: "YOUR-PASSWORD"	
 }
