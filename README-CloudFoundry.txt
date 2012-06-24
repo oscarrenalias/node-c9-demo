@@ -24,6 +24,11 @@ First push
 ----------
 	Change into the application directory.
 
+	Ensure that the correct npm modules are in place:
+		npm install
+
+	Remember to edit your Twitter credentials into credential.js!
+
 	Connect to the CloudFoundry instance:
 		vmc target api.<myinstance>.cloudfoundry.me
 
