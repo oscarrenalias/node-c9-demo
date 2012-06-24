@@ -15,14 +15,11 @@ require('zappajs') Number( cf.port || process.env.PORT ), ->
         path: "/1/statuses/filter.json?locations=-74,40,-72,42" # New York
         auth: credentials.user + ":" + credentials.password
 
-    # Workaround so that io is visible in the next block
-    io = @io
-
-    https.get options, (res) ->
-        res.on 'data', (chunk) ->
+    https.get options, (res) =>
+        res.on 'data', (chunk) =>
             tweet = JSON.parse chunk
             if tweet.geo
-                io.sockets.emit('tweet', {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text})
+                @io.sockets.emit 'tweet', {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text}
                 #console.log tweet.geo.coordinates
                 
     # Client side javascript for the view
