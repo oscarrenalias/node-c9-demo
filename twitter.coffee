@@ -10,18 +10,24 @@ require('zappajs') Number( cf.port || process.env.PORT ), ->
     # Forward to index
     @get '/': -> @render 'index': {layout: no}
 
+    # Twitter stream options
     options = 
         host: "stream.twitter.com"
         path: "/1/statuses/filter.json?locations=-74,40,-72,42" # New York
         auth: credentials.user + ":" + credentials.password
 
-    https.get options, (res) =>
-        res.on 'data', (chunk) =>
-            tweet = JSON.parse chunk
-            if tweet.geo
-                @io.sockets.emit 'tweet', {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text}
-                #console.log tweet.geo.coordinates
-                
+    # If the stream breaks, reset it
+    do stream = =>
+        req = https.get options, (res) =>
+            res.on 'data', (chunk) =>
+                tweet = JSON.parse chunk
+                if tweet.geo
+                    @io.sockets.emit 'tweet', {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text}
+                    #console.log tweet.geo.coordinates
+        req.on 'error', ->
+            console.log 'Error while getting the twitter hose, resetting'
+            do stream
+            
     # Client side javascript for the view
     @client '/index.js': ->
         @on tweet: ->
