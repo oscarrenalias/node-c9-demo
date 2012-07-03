@@ -21,9 +21,8 @@ require('zappajs') Number( cf.port || process.env.PORT ), ->
         req = https.get options, (res) =>
             res.on 'data', (chunk) =>
                 tweet = JSON.parse chunk
-                if tweet.geo
-                    @io.sockets.emit 'tweet', {lat:tweet.geo.coordinates[0], lng:tweet.geo.coordinates[1], text:tweet.text}
-                    #console.log tweet.geo.coordinates
+                if tweet.coordinates
+                    @io.sockets.emit 'tweet', {lat:tweet.coordinates.coordinates[1], lng:tweet.coordinates.coordinates[0], text:tweet.text, user:tweet.user.screen_name}
         req.on 'error', ->
             console.log 'Error while getting the twitter hose, resetting'
             do stream
@@ -35,7 +34,7 @@ require('zappajs') Number( cf.port || process.env.PORT ), ->
                 position: new google.maps.LatLng @data.lat, @data.lng
                 map: map
                 animation: google.maps.Animation.DROP
-                title: @data.text
+                title: @data.user + ':' + @data.text
 
         map = $ ->
             myOptions =
